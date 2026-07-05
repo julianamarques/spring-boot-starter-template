@@ -45,15 +45,7 @@ Projeto template com algumas configurações comuns já feitas e autenticação 
     password: ${PASSWORD_EMAIL:12345}
     protocol: smtp
    ```
-    6. Lembrando que o valor do atributo ```ddl-auto``` está ```validate```, ou seja, ele valida o mapeamento das entidades conforme o modelado no banco de dados, é possível alterar para ```update```, ```create```, ```create-drop```, ou até mesmo ```none```.
-   ```yml
-   hibernate:
-    naming:
-      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-    ddl-auto: validate
-   ```
-    7. Caso queira habilitar o ```Flyway``` altere o ```enabled``` para ```true``` e coloque os scripts de migração no caminho ```classpath:db/migration``` ou renomeie esse caminho para uma da sua preferência:
+    6. Caso queira habilitar o ```Flyway``` altere o ```enabled``` para ```true``` e coloque os scripts de migração no caminho ```classpath:db/migration``` ou renomeie esse caminho para uma da sua preferência:
    ```yml
    flyway:
     enabled: false
