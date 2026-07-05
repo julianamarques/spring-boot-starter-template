@@ -1,36 +1,19 @@
-# Como contribuir?
+# Como Contribuir?
 
 Obrigado por considerar contribuir com o Spring Boot Starter Template. Este guia descreve o fluxo recomendado para propor correções, melhorias e ajustes de documentação.
 
-## Iniciando
+## Fluxo de Trabalho
 
-1. Faça um fork do repositório e clone o projeto.
-2. Crie uma branch a partir da branch principal:
+- Faça um fork do repositório e clone o projeto.
+- Crie uma branch a partir da branch principal.
+- Use nomes de branch objetivos, como `feature/nome-da-feature` ou
+  `fix/descricao-do-ajuste`.
+- Consulte o `README.md` para configurações locais e execução da aplicação.
+- Mantenha pull requests pequenos e focados em uma mudança principal.
+- Explique no pull request o problema resolvido, a solução aplicada e como a
+  alteração foi validada.
 
-```sh
-git checkout -b feature/nome-da-alteracao
-```
-
-3. Consulte o `README.md` para configurações locais e execução da aplicação.
-
-## Validações antes do pull request
-
-Antes de abrir um pull request, execute:
-
-```sh
-mvn test
-mvn checkstyle:check
-```
-
-Também revise se:
-
-- A alteração está limitada ao escopo proposto.
-- Novas regras de negócio possuem testes quando aplicável.
-- Migrations seguem o padrão `V1.01__sua_alteracao.sql`.
-- Nenhuma credencial, token ou dado sensível foi versionado.
-- A documentação foi atualizada quando a alteração muda o uso do projeto.
-
-## Padrão de código
+## Padrão de Código
 
 - Siga a estrutura de pacotes já existente.
 - Prefira nomes claros para classes, métodos e variáveis.
@@ -47,7 +30,24 @@ fix: Corrige validacao de token JWT
 chore: Atualiza configuracao do Flyway
 ```
 
-## Pull requests
+## Validação
+
+Antes de abrir um pull request, execute:
+
+```sh
+mvn test
+mvn checkstyle:check
+```
+
+Também revise se:
+
+- A alteração está limitada ao escopo proposto.
+- Novas regras de negócio possuem testes quando aplicável.
+- Migrations seguem o padrão `V1.01__sua_alteracao.sql`.
+- Nenhuma credencial, token ou dado sensível foi versionado.
+- A documentação foi atualizada quando a alteração muda o uso do projeto.
+
+## Pull Requests
 
 Ao abrir um pull request, inclua:
 
@@ -58,7 +58,7 @@ Ao abrir um pull request, inclua:
 
 Pull requests pequenos e focados tendem a ser revisados com mais facilidade.
 
-## Reportando problemas
+## Issues
 
 Ao abrir uma issue, informe:
 
