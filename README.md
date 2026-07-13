@@ -1,6 +1,6 @@
 # Spring Boot Starter Template
 
-[![CI](https://github.com/julianamarques/spring-boot-starter-template/actions/workflows/github-ci.yml/badge.svg)](https://github.com/julianamarques/spring-boot-starter-template/actions/workflows/github-ci.yml)
+[![CI](https://github.com/julianamarques/springboot-starter-template/actions/workflows/github-ci.yml/badge.svg)](https://github.com/julianamarques/springboot-starter-template/actions/workflows/github-ci.yml)
 [![Java](https://img.shields.io/badge/Java-25-ED8B00.svg?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/25/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 
