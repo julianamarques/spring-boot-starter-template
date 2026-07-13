@@ -1,13 +1,17 @@
 # Spring Boot Starter Template
 
+[![CI](https://github.com/julianamarques/spring-boot-starter-template/actions/workflows/github-ci.yml/badge.svg)](https://github.com/julianamarques/spring-boot-starter-template/actions/workflows/github-ci.yml)
+[![Java](https://img.shields.io/badge/Java-25-ED8B00.svg?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/25/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+
 Projeto template com algumas configurações comuns já feitas e autenticação JWT implementada para ser usado como base em outros projetos
 
-### Requisitos Necessários 💻
+### 💻 Requisitos Necessários
 
-* Java 25+
+* Java 25
 * Maven 3.9.6+
 
-### Como usar? ⚙️
+### 🛠️ Como Configurar?
 
 1. No `application.yml`:
     1. Altere com o nome da aplicação e as credenciais do banco:
@@ -68,7 +72,7 @@ Projeto template com algumas configurações comuns já feitas e autenticação 
 </project>
 ```
 
-### Executando o Projeto ▶️
+### 🚀 Executando o Projeto
 
 Antes de rodar, defina o segredo usado na assinatura dos tokens JWT. Ele é obrigatório (a aplicação não sobe sem ele) e precisa ter pelo menos 64 bytes, requisito do algoritmo HS512:
 
@@ -82,13 +86,37 @@ Por padrão, o CORS libera apenas `http://localhost:4200` e `http://localhost:30
 export CORS_ALLOWED_ORIGINS=https://app.suaaplicacao.com.br
 ```
 
-Depois de concluídas as configurações, rode o projeto com:
+Após concluídas as configurações, rode o projeto com um dos comandos abaixo:
 
 ```sh
-mvn clean install -DskipTests spring-boot:run
+mvn clean install spring-boot:run -DskipTests # SE FOR EXECUTAR LOCAL
 ```
 
-### Documentação da API (Swagger) 📖
+```sh
+docker compose up -d --build # SE FOR EXECUTAR COM DOCKER
+```
+
+O `docker-compose.yml` sobe **apenas a aplicação**, construída a partir do `Dockerfile` (build multi-stage). É preciso ter um Postgres acessível separadamente — por padrão, a aplicação se conecta em `host.docker.internal:5432` (ou seja, um Postgres rodando na sua máquina host, fora do Docker). Ajuste `DB_URL`, `USER_DB` e `PASSWORD_DB` no `docker-compose.yml` caso o banco esteja em outro lugar.
+
+A API fica disponível em `http://localhost:8080/base-url` (ex.: `GET /base-url/health/check`).
+
+A porta exposta no host é configurável (útil se a porta padrão já estiver em uso):
+
+```sh
+APP_HOST_PORT=8081 docker compose up -d --build
+```
+
+> Nota: os **testes não usam** este `docker-compose.yml` — eles sobem um Postgres próprio e efêmero via Testcontainers.
+
+### 🧪 Testes
+
+Os testes de integração usam [Testcontainers](https://testcontainers.com/), que sobe um Postgres real em container automaticamente — não é preciso configurar banco manualmente. Basta ter o **Docker** em execução:
+
+```sh
+mvn test
+```
+
+### 📖 Documentação da API (Swagger)
 
 A documentação interativa (OpenAPI 3) é gerada automaticamente pelo springdoc. Com a aplicação no ar, acesse:
 
@@ -97,39 +125,7 @@ A documentação interativa (OpenAPI 3) é gerada automaticamente pelo springdoc
 
 O esquema de segurança JWT já está configurado — use o botão **Authorize** e informe o token (obtido em `/auth/login`) para chamar os endpoints protegidos. Para desabilitar em produção, defina `SPRINGDOC_API_DOCS_ENABLED=false` e `SPRINGDOC_SWAGGER_UI_ENABLED=false`.
 
-### Executando com Docker 🐳
-
-O `docker-compose.yml` sobe a **aplicação e o banco** juntos. A aplicação é construída a partir do `Dockerfile` (build multi-stage) e o Flyway cria o schema automaticamente:
-
-```sh
-docker compose up -d --build
-```
-
-A API fica disponível em `http://localhost:8080/base-url` (ex.: `GET /base-url/health/check`).
-
-Para subir **apenas o Postgres** (por exemplo, para rodar a aplicação localmente via `mvn`, contra os valores padrão do `application.yml`):
-
-```sh
-docker compose up -d postgres
-```
-
-As portas expostas no host são configuráveis (útil se as portas padrão já estiverem em uso):
-
-```sh
-POSTGRES_HOST_PORT=5433 APP_HOST_PORT=8081 docker compose up -d --build
-```
-
-> Nota: os **testes não usam** este `docker-compose.yml` — eles sobem um Postgres próprio e efêmero via Testcontainers.
-
-### Testes 🧪
-
-Os testes de integração usam [Testcontainers](https://testcontainers.com/), que sobe um Postgres real em container automaticamente — não é preciso configurar banco manualmente. Basta ter o **Docker** em execução:
-
-```sh
-mvn test
-```
-
-### Checkstyle ✅
+### ✅ Checkstyle
 
 Você pode verificar o checkstyle e manter o padrão de formatação do seu código através do comando:
 
@@ -137,6 +133,6 @@ Você pode verificar o checkstyle e manter o padrão de formatação do seu cód
 mvn checkstyle:check
 ```
 
-### Contribuições 🤝
+### 🤝 Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir um pull request para propor melhorias ou correções.
