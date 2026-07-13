@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Github Actions
 run-name: ${{ github.actor }} started this job
 
 on:
