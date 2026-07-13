@@ -11,41 +11,24 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class Response<B> extends ResponseEntity<B> implements Serializable {
+public class Response<B> implements Serializable {
     private Integer status;
     private String message;
     private LocalDateTime timestamp;
     private B body;
 
-    public Response() {
-        super((B) null, HttpStatus.OK);
-        this.status = HttpStatus.OK.value();
-        this.message = ApiMessageEnum.REQUEST_COMPLETED.getMessage();
-        this.timestamp = LocalDateTime.now();
-        this.body = null;
-    }
-
-    public Response(B body) {
-        super(body, HttpStatus.OK);
-        this.status = HttpStatus.OK.value();
-        this.message = ApiMessageEnum.REQUEST_COMPLETED.getMessage();
-        this.timestamp = LocalDateTime.now();
-        this.body = body;
-    }
-
-    public Response(HttpStatus status, B body) {
-        super(body, status);
-        this.status = status.value();
-        this.message = ApiMessageEnum.REQUEST_COMPLETED.getMessage();
-        this.timestamp = LocalDateTime.now();
-        this.body = body;
-    }
-
     public Response(HttpStatus status, String message, B body) {
-        super(body, status);
         this.status = status.value();
         this.message = message;
         this.timestamp = LocalDateTime.now();
         this.body = body;
+    }
+
+    public static <T> ResponseEntity<Response<T>> success(T body) {
+        return ResponseEntity.ok(new Response<>(HttpStatus.OK, ApiMessageEnum.REQUEST_COMPLETED.getMessage(), body));
+    }
+
+    public static ResponseEntity<Object> error(HttpStatus status, String message, Object body) {
+        return new ResponseEntity<>(new Response<>(status, message, body), status);
     }
 }
