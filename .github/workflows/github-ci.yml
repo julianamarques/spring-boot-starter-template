@@ -19,14 +19,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 25
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
-      - name: Build
-        run: mvn clean compile -f pom.xml
+      - name: Build and test
+        run: mvn -B clean verify
       - name: Checkstyle
-        run: mvn checkstyle:check
+        run: mvn -B checkstyle:check

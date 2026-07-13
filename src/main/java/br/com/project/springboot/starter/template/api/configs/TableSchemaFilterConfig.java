@@ -5,6 +5,8 @@ import org.hibernate.boot.model.relational.Sequence;
 import org.hibernate.mapping.Table;
 import org.hibernate.tool.schema.spi.SchemaFilter;
 
+import java.util.Objects;
+
 public class TableSchemaFilterConfig implements SchemaFilter {
     public static final TableSchemaFilterConfig INSTANCE = new TableSchemaFilterConfig();
 
@@ -15,7 +17,7 @@ public class TableSchemaFilterConfig implements SchemaFilter {
 
     @Override
     public boolean includeTable(Table table) {
-        return table.getSchema().equals("public");
+        return Objects.isNull(table.getSchema()) || table.getSchema().equals("public");
     }
 
     @Override

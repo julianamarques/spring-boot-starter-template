@@ -39,7 +39,10 @@ mvn test
 mvn checkstyle:check
 ```
 
-Também revise se:
+Os testes de integração usam Testcontainers e sobem um Postgres real em container
+automaticamente, portanto é necessário ter o **Docker** em execução para rodar `mvn test`.
+
+Também reveja se:
 
 - A alteração está limitada ao escopo proposto.
 - Novas regras de negócio possuem testes quando aplicável.

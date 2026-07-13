@@ -70,10 +70,63 @@ Projeto template com algumas configurações comuns já feitas e autenticação 
 
 ### Executando o Projeto ▶️
 
+Antes de rodar, defina o segredo usado na assinatura dos tokens JWT. Ele é obrigatório (a aplicação não sobe sem ele) e precisa ter pelo menos 64 bytes, requisito do algoritmo HS512:
+
+```sh
+export KEY_JWT_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+```
+
+Por padrão, o CORS libera apenas `http://localhost:4200` e `http://localhost:3000`. Se o front-end rodar em outra origem, defina:
+
+```sh
+export CORS_ALLOWED_ORIGINS=https://app.suaaplicacao.com.br
+```
+
 Depois de concluídas as configurações, rode o projeto com:
 
 ```sh
 mvn clean install -DskipTests spring-boot:run
+```
+
+### Documentação da API (Swagger) 📖
+
+A documentação interativa (OpenAPI 3) é gerada automaticamente pelo springdoc. Com a aplicação no ar, acesse:
+
+- Swagger UI: `http://localhost:8080/base-url/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/base-url/v3/api-docs`
+
+O esquema de segurança JWT já está configurado — use o botão **Authorize** e informe o token (obtido em `/auth/login`) para chamar os endpoints protegidos. Para desabilitar em produção, defina `SPRINGDOC_API_DOCS_ENABLED=false` e `SPRINGDOC_SWAGGER_UI_ENABLED=false`.
+
+### Executando com Docker 🐳
+
+O `docker-compose.yml` sobe a **aplicação e o banco** juntos. A aplicação é construída a partir do `Dockerfile` (build multi-stage) e o Flyway cria o schema automaticamente:
+
+```sh
+docker compose up -d --build
+```
+
+A API fica disponível em `http://localhost:8080/base-url` (ex.: `GET /base-url/health/check`).
+
+Para subir **apenas o Postgres** (por exemplo, para rodar a aplicação localmente via `mvn`, contra os valores padrão do `application.yml`):
+
+```sh
+docker compose up -d postgres
+```
+
+As portas expostas no host são configuráveis (útil se as portas padrão já estiverem em uso):
+
+```sh
+POSTGRES_HOST_PORT=5433 APP_HOST_PORT=8081 docker compose up -d --build
+```
+
+> Nota: os **testes não usam** este `docker-compose.yml` — eles sobem um Postgres próprio e efêmero via Testcontainers.
+
+### Testes 🧪
+
+Os testes de integração usam [Testcontainers](https://testcontainers.com/), que sobe um Postgres real em container automaticamente — não é preciso configurar banco manualmente. Basta ter o **Docker** em execução:
+
+```sh
+mvn test
 ```
 
 ### Checkstyle ✅

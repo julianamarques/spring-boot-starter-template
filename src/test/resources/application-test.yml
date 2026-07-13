@@ -1,0 +1,8 @@
+spring:
+  flyway:
+    enabled: true
+
+application:
+  key:
+    jwt:
+      secret: 0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF

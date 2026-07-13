@@ -27,8 +27,11 @@ public class LogFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         beforeRequest(request);
-        filterChain.doFilter(request, response);
-        afterRequest(request);
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            afterRequest(request);
+        }
     }
 
     private void beforeRequest(HttpServletRequest request) {

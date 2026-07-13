@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: spring-boot-starter-template-db
+    environment:
+      POSTGRES_DB: database_local
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d database_local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: spring-boot-starter-template-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/database_local
+      USER_DB: postgres
+      PASSWORD_DB: postgres
+      KEY_JWT_SECRET: dev-only-change-me-0123456789-0123456789-0123456789-0123456789-0123456789
+      SPRING_FLYWAY_ENABLED: "true"
+    ports:
+      - "${APP_HOST_PORT:-8080}:8080"
+
+volumes:
+  postgres_data:
