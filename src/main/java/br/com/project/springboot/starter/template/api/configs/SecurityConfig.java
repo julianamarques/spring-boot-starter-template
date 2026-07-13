@@ -5,6 +5,7 @@ import br.com.project.springboot.starter.template.api.filters.LogFilter;
 import br.com.project.springboot.starter.template.api.handlers.ApiAccessDeniedHandler;
 import br.com.project.springboot.starter.template.api.handlers.ApiAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -30,6 +31,9 @@ public class SecurityConfig {
     private final AuthFilter authFilter;
     private final LogFilter logFilter;
 
+    @Value("${application.cors.allowed-origins}")
+    private List<String> allowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         return http.csrf(AbstractHttpConfigurer::disable)
@@ -37,7 +41,11 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/health/check",
                                 "/auth/login",
-                                "/auth/create-user"
+                                "/auth/create-user",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
                         )
                         .permitAll()
                         .anyRequest()
@@ -60,7 +68,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOriginPatterns(allowedOrigins);
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

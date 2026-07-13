@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,5 +23,13 @@ public class UserService {
 
     public User findByEmail(String email) throws ApiException {
         return repository.findByEmail(email).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ApiMessageEnum.USER_NOT_FOUND));
+    }
+
+    public boolean existsByEmail(String email) {
+        return repository.existsByEmail(email);
+    }
+
+    public boolean existsByEmailAndIdNot(String email, UUID id) {
+        return repository.existsByEmailAndIdNot(email, id);
     }
 }

@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -38,7 +39,7 @@ public class ApiExceptionHandler {
 
         log.error("Route not found {}", ex.getMessage());
 
-        return new Response<>(HttpStatus.NOT_FOUND, ApiMessageEnum.ROUTE_NOT_FOUND.getMessage(), body);
+        return Response.error(HttpStatus.NOT_FOUND, ApiMessageEnum.ROUTE_NOT_FOUND.getMessage(), body);
     }
 
     @NonNull
@@ -46,7 +47,7 @@ public class ApiExceptionHandler {
     protected ResponseEntity<Object> handleMissingServletRequestParameter(@NonNull MissingServletRequestParameterException ex) {
         String body = String.format("Required parameter: %s", ex.getParameterName());
 
-        return new Response<>(HttpStatus.BAD_REQUEST, ApiMessageEnum.REQUEST_PARAMETERS_MISSING.getMessage(), body);
+        return Response.error(HttpStatus.BAD_REQUEST, ApiMessageEnum.REQUEST_PARAMETERS_MISSING.getMessage(), body);
     }
 
     @NonNull
@@ -54,7 +55,7 @@ public class ApiExceptionHandler {
     protected ResponseEntity<Object> handleTypeMismatch(@NonNull TypeMismatchException ex) {
         String body = String.format("Error in parameter conversion [%s]: %s", ex.getPropertyName(), ex.getMessage());
 
-        return new Response<>(HttpStatus.BAD_REQUEST, ApiMessageEnum.ENDPOINT_ERROR.getMessage(), body);
+        return Response.error(HttpStatus.BAD_REQUEST, ApiMessageEnum.ENDPOINT_ERROR.getMessage(), body);
     }
 
     @NonNull
@@ -63,7 +64,7 @@ public class ApiExceptionHandler {
         log.error(ex);
 
         String causeMessage = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-        return new Response<>(HttpStatus.BAD_REQUEST, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), causeMessage);
+        return Response.error(HttpStatus.BAD_REQUEST, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), causeMessage);
     }
 
     @NonNull
@@ -78,7 +79,7 @@ public class ApiExceptionHandler {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
-        return new Response<>(HttpStatus.BAD_REQUEST, ApiMessageEnum.INVALID_ARGUMENT.getMessage(), errors);
+        return Response.error(HttpStatus.BAD_REQUEST, ApiMessageEnum.INVALID_ARGUMENT.getMessage(), errors);
     }
 
     @NonNull
@@ -91,7 +92,7 @@ public class ApiExceptionHandler {
         Objects.requireNonNull(ex.getSupportedHttpMethods()).forEach(t -> builder.append(t).append(", "));
         String body = builder.substring(0, builder.length() - 2);
 
-        return new Response<>(HttpStatus.METHOD_NOT_ALLOWED, ApiMessageEnum.UNSUPPORTED_METHOD.getMessage(), body);
+        return Response.error(HttpStatus.METHOD_NOT_ALLOWED, ApiMessageEnum.UNSUPPORTED_METHOD.getMessage(), body);
     }
 
     @ExceptionHandler(SSLHandshakeException.class)
@@ -99,7 +100,7 @@ public class ApiExceptionHandler {
         log.error("{}", ApiMessageEnum.SSL_HANDSHAKE_ERROR.getMessage());
 
         String causeMessage = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-        return new Response<>(HttpStatus.SERVICE_UNAVAILABLE, ApiMessageEnum.SSL_HANDSHAKE_ERROR.getMessage(), causeMessage);
+        return Response.error(HttpStatus.SERVICE_UNAVAILABLE, ApiMessageEnum.SSL_HANDSHAKE_ERROR.getMessage(), causeMessage);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -107,24 +108,29 @@ public class ApiExceptionHandler {
         log.error("{}", ApiMessageEnum.ACCESS_DENIED.getMessage());
 
         String causeMessage = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-        return new Response<>(HttpStatus.FORBIDDEN, ApiMessageEnum.ACCESS_DENIED.getMessage(), causeMessage);
+        return Response.error(HttpStatus.FORBIDDEN, ApiMessageEnum.ACCESS_DENIED.getMessage(), causeMessage);
     }
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Object> handleApiErrorException(ApiException exception) {
         printErrorLog(exception, null, null);
 
-        return new Response<>(exception.getHttpStatus(), exception
+        return Response.error(exception.getHttpStatus(), exception
                 .getApiMessage().getMessage(), exception.getErrorMessage());
     }
 
     @ExceptionHandler(ApiExternalException.class)
     public ResponseEntity<Object> handleApiExternalException(ApiExternalException exception) {
-        Response<Object> response = new Response<>(exception.getHttpStatus(), exception.getMessage(), exception.getResponseBody());
+        printErrorLog(null, exception, exception.getMessage());
 
-        printErrorLog(null, exception, response.getMessage());
+        return Response.error(exception.getHttpStatus(), exception.getMessage(), exception.getResponseBody());
+    }
 
-        return response;
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
+        log.error("A data integrity violation occurred!", exception);
+
+        return Response.error(HttpStatus.CONFLICT, ApiMessageEnum.DATA_INTEGRITY_VIOLATION.getMessage(), null);
     }
 
     @ExceptionHandler(Exception.class)
@@ -136,7 +142,7 @@ public class ApiExceptionHandler {
 
         printErrorLog(apiException, null, null);
 
-        return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), causeMessage);
+        return Response.error(HttpStatus.INTERNAL_SERVER_ERROR, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), causeMessage);
     }
 
     private void printErrorLog(ApiException exception, ApiExternalException externalException,

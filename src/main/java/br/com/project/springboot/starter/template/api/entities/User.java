@@ -68,6 +68,11 @@ public class User implements Serializable, UserDetails {
     }
 
     @Override
+    public boolean isEnabled() {
+        return Boolean.TRUE.equals(this.active);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

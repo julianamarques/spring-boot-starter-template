@@ -18,31 +18,31 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> auth(@Valid @RequestBody AuthRequestDTO request) throws ApiException {
+    public ResponseEntity<Response<UserResponseDTO>> auth(@Valid @RequestBody AuthRequestDTO request) throws ApiException {
         UserResponseDTO body = authService.auth(request);
 
-        return new Response<>(body);
+        return Response.success(body);
     }
 
     @GetMapping("/user")
-    public ResponseEntity<UserResponseDTO> getAuthUser(@RequestHeader("Authorization") String token) throws ApiException {
+    public ResponseEntity<Response<UserResponseDTO>> getAuthUser(@RequestHeader("Authorization") String token) throws ApiException {
         UserResponseDTO body = authService.getAuthUserDTO(token);
 
-        return new Response<>(body);
+        return Response.success(body);
     }
 
     @PostMapping("/create-user")
-    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO request) throws ApiException {
+    public ResponseEntity<Response<UserResponseDTO>> createUser(@Valid @RequestBody UserRequestDTO request) throws ApiException {
         UserResponseDTO body = authService.save(request);
 
-        return new Response<>(body);
+        return Response.success(body);
     }
 
     @PutMapping("/edit-user")
-    public ResponseEntity<UserResponseDTO> editUser(@RequestHeader("Authorization") String token,
-                                                    @Valid @RequestBody UserRequestDTO request) throws ApiException {
+    public ResponseEntity<Response<UserResponseDTO>> editUser(@RequestHeader("Authorization") String token,
+                                                             @Valid @RequestBody UserRequestDTO request) throws ApiException {
         UserResponseDTO body = authService.edit(token, request);
 
-        return new Response<>(body);
+        return Response.success(body);
     }
 }

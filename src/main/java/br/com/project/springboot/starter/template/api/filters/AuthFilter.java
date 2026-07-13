@@ -6,6 +6,7 @@ import br.com.project.springboot.starter.template.api.enums.ApiMessageEnum;
 import br.com.project.springboot.starter.template.api.exceptions.ApiException;
 import br.com.project.springboot.starter.template.api.service.AuthService;
 import br.com.project.springboot.starter.template.api.utils.JsonUtils;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,8 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
+    private static final String BEARER_PREFIX = "Bearer ";
+
     private final AuthService authService;
     private final JsonUtils jsonUtils;
 
@@ -38,12 +41,19 @@ public class AuthFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
-        if (Objects.isNull(authHeader)) {
+        if (Objects.isNull(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
+
             return;
         }
 
-        final String token = authHeader.substring(7);
+        final String token = authHeader.substring(BEARER_PREFIX.length());
+
+        if (token.isBlank()) {
+            filterChain.doFilter(request, response);
+
+            return;
+        }
 
         try {
             User user = authService.validateToken(token);
@@ -54,14 +64,13 @@ public class AuthFilter extends OncePerRequestFilter {
 
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(auth);
-        } catch (ApiException e) {
-            if (e.getHttpStatus().equals(HttpStatus.UNAUTHORIZED)) {
-                Response<Object> responseApi = new Response<>(HttpStatus.UNAUTHORIZED, ApiMessageEnum.ACCESS_DENIED.getMessage(), null);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().print(jsonUtils.objectToJson(responseApi));
-                return;
-            }
+        } catch (JwtException | ApiException e) {
+            Response<Object> responseApi = new Response<>(HttpStatus.UNAUTHORIZED, ApiMessageEnum.ACCESS_DENIED.getMessage(), null);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().print(jsonUtils.objectToJson(responseApi));
+
+            return;
         }
 
         filterChain.doFilter(request, response);

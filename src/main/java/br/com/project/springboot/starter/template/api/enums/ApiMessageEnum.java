@@ -2,7 +2,6 @@ package br.com.project.springboot.starter.template.api.enums;
 
 import lombok.Getter;
 
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -23,6 +22,8 @@ public enum ApiMessageEnum {
     EMAIL_EXISTS("message.api.email_exists"),
     INVALID_PASSWORD("message.api.invalid_password"),
     INVALID_USER_OR_PASSWORD("message.api.user_or_password_invalid"),
+    USER_DISABLED("message.api.user_disabled"),
+    DATA_INTEGRITY_VIOLATION("message.api.data_integrity_violation"),
     ROLE_NOT_FOUND("message.api.role_not_found");
 
     ApiMessageEnum(String description) {
@@ -33,20 +34,12 @@ public enum ApiMessageEnum {
     private final String description;
 
     public String getMessage(String... args) {
-        String message = convertToUTF8(resourceBundle.getString(this.description));
+        String message = resourceBundle.getString(this.description);
 
-        if (message.contains("�")) {
-            message = resourceBundle.getString(this.description);
-        }
-
-        return Objects.isNull(args) ? message : MessageFormat.format(message, (Object) args);
-    }
-
-    private static String convertToUTF8(String message) {
-        try {
-            return new String(message.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
-        } catch (Exception e) {
+        if (Objects.isNull(args) || args.length == 0) {
             return message;
         }
+
+        return MessageFormat.format(message, (Object[]) args);
     }
 }

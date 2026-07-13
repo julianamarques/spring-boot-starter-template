@@ -22,8 +22,8 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(@NonNull HttpServletRequest request, HttpServletResponse servletResponse,
                        @NonNull AccessDeniedException accessDeniedException) throws IOException {
-        Response<Object> response = new Response<>(HttpStatus.UNAUTHORIZED, ApiMessageEnum.ACCESS_DENIED.getMessage(), null);
-        servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        Response<Object> response = new Response<>(HttpStatus.FORBIDDEN, ApiMessageEnum.ACCESS_DENIED.getMessage(), null);
+        servletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
         servletResponse.setContentType("application/json");
         servletResponse.getWriter().print(jsonUtils.objectToJson(response));
     }

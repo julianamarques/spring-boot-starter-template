@@ -4,6 +4,7 @@ import br.com.project.springboot.starter.template.api.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,15 +15,26 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Log4j2
 @RequiredArgsConstructor
 public class TokenService {
+    private static final int MIN_SECRET_KEY_BYTES = 64;
+
     @Value("${application.key.jwt.secret}")
     private String secretKey;
     @Value("${application.key.jwt.expiration}")
     private Integer validateTokenTime;
+
+    @PostConstruct
+    private void validateSecretKey() {
+        if (Objects.isNull(secretKey) || secretKey.getBytes(StandardCharsets.UTF_8).length < MIN_SECRET_KEY_BYTES) {
+            throw new IllegalStateException("KEY_JWT_SECRET deve ser definida com pelo menos 64 bytes (512 bits), "
+                    + "requisito do algoritmo HS512. Gere um valor com: openssl rand -base64 64");
+        }
+    }
 
     public String generateToken(User user) {
         return generateToken(new HashMap<>(), user);
