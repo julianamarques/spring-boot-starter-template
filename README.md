@@ -1,4 +1,4 @@
-# Spring Boot Starter Template
+# 🍃 Spring Boot Starter Template
 
 [![CI](https://github.com/julianamarques/spring-boot-starter-template/actions/workflows/github-ci.yml/badge.svg)](https://github.com/julianamarques/spring-boot-starter-template/actions/workflows/github-ci.yml)
 [![Java](https://img.shields.io/badge/Java-25-ED8B00.svg?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/25/)
