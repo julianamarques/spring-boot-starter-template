@@ -4,14 +4,44 @@
 [![Java](https://img.shields.io/badge/Java-25-ED8B00.svg?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/25/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 
-Projeto template com algumas configurações comuns já feitas e autenticação JWT implementada para ser usado como base em outros projetos
+Projeto template com algumas configurações comuns já feitas e autenticação JWT implementada para ser usado como base em outros projetos.
 
-### 💻 Requisitos Necessários
+## 💻 Requisitos Necessários
 
 * Java 25
 * Maven 3.9.6+
 
-### 🛠️ Como Configurar?
+## 📂 Estrutura do Projeto
+
+```
+├── .github/workflows/     # CI: build, testes e checkstyle a cada push/PR
+├── src/main/java/.../api/
+│   ├── configs/           # Configurações (segurança, Hibernate, OpenAPI, Jackson)
+│   │   └── clients/       # Configuração do Feign client e decoder de erros
+│   ├── controllers/       # Endpoints da API
+│   ├── dtos/
+│   │   ├── request/       # DTOs de entrada
+│   │   └── response/      # DTOs de saída e envelope padrão das respostas
+│   ├── entities/          # Entidades JPA
+│   ├── enums/             # Mensagens padronizadas e enums de domínio
+│   ├── exceptions/        # Exceções customizadas da API
+│   ├── filters/           # Filtros de autenticação e log de requisições
+│   ├── handlers/          # Tratamento global de exceções e segurança
+│   ├── repositories/      # Repositórios JPA
+│   ├── service/           # Regras de negócio
+│   ├── utils/             # Utilitários
+│   └── SpringBootStarterTemplateApiApplication.java  # Bootstrapping do Spring Boot
+├── src/main/resources/
+│   ├── db/migration/      # Scripts de migração do Flyway
+│   └── application.yml    # Configurações da aplicação
+├── src/test/               # Testes com JUnit
+├── Dockerfile              # Build multi-stage da imagem da API
+├── docker-compose.yml      # Sobe a aplicação em container
+├── checkstyle.xml          # Regras de formatação e padrão de código
+└── pom.xml                 # Dependências e configurações (Maven)
+```
+
+## 🛠️ Como Configurar?
 
 1. No `application.yml`:
     1. Altere com o nome da aplicação e as credenciais do banco:
@@ -57,7 +87,7 @@ Projeto template com algumas configurações comuns já feitas e autenticação 
    ```
    Lembrando que no ```Flyway``` os scripts devem estar nomeados da seguinte forma: ```V1.01__sua_alteracao.sql```. Exemplo: ```V1.01__update_table_usuario.sql```.
 2. Renomeie o package ```br.com.project.springboot.starter.template.api``` para ```br.com.nomesuaaplicacao.api```, tanto no ```/src/main/java``` quanto no ```/src/test/java```
-3. Renomeie o arquivo ```SprintBootStarterTemplateApiApplication``` e ```SprintBootStarterTemplateApiApplicationTests``` para ```NomeSuaAplicacaoApiApplication``` e ```NomeSuaAplicacaoApiApplicationTests```
+3. Renomeie o arquivo ```SpringBootStarterTemplateApiApplication``` e ```SpringBootStarterTemplateApiApplicationTests``` para ```NomeSuaAplicacaoApiApplication``` e ```NomeSuaAplicacaoApiApplicationTests```
 4. No ```pom.xml```, altere o ```<groupId>```, ```<name>``` e ```<description>```, para algo correspondente a sua aplicação:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -74,41 +104,20 @@ Projeto template com algumas configurações comuns já feitas e autenticação 
 
 ### 🚀 Executando o Projeto
 
-Antes de rodar, defina o segredo usado na assinatura dos tokens JWT. Ele é obrigatório (a aplicação não sobe sem ele) e precisa ter pelo menos 64 bytes, requisito do algoritmo HS512:
+Defina o segredo do JWT (obrigatório, mínimo 64 bytes) e rode local ou com Docker:
 
 ```sh
 export KEY_JWT_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+
+mvn clean install spring-boot:run -DskipTests   # PARA EXECUTAR LOCALMENTE
+docker compose up -d --build                    # PARA EXECUTAR COM DOCKER
 ```
-
-Por padrão, o CORS libera apenas `http://localhost:4200` e `http://localhost:3000`. Se o front-end rodar em outra origem, defina:
-
-```sh
-export CORS_ALLOWED_ORIGINS=https://app.suaaplicacao.com.br
-```
-
-Após concluídas as configurações, rode o projeto com um dos comandos abaixo:
-
-```sh
-mvn clean install spring-boot:run -DskipTests # SE FOR EXECUTAR LOCAL
-```
-
-```sh
-docker compose up -d --build # SE FOR EXECUTAR COM DOCKER
-```
-
-O `docker-compose.yml` sobe **apenas a aplicação**, construída a partir do `Dockerfile` (build multi-stage). É preciso ter um Postgres acessível separadamente — por padrão, a aplicação se conecta em `host.docker.internal:5432` (ou seja, um Postgres rodando na sua máquina host, fora do Docker). Ajuste `DB_URL`, `USER_DB` e `PASSWORD_DB` no `docker-compose.yml` caso o banco esteja em outro lugar.
 
 A API fica disponível em `http://localhost:8080/base-url` (ex.: `GET /base-url/health/check`).
 
-A porta exposta no host é configurável (útil se a porta padrão já estiver em uso):
+> No Docker, o `docker-compose.yml` sobe só a aplicação — é preciso ter um Postgres acessível em `host.docker.internal:5432` (ajustável via `DB_URL`, `USER_DB` e `PASSWORD_DB`). Para mudar a porta exposta, use `APP_HOST_PORT=8081 docker compose up -d --build`. Se o front-end rodar fora de `localhost:4200`/`localhost:3000`, defina `CORS_ALLOWED_ORIGINS`. Os testes não usam esse compose — eles sobem um Postgres próprio via Testcontainers.
 
-```sh
-APP_HOST_PORT=8081 docker compose up -d --build
-```
-
-> Nota: os **testes não usam** este `docker-compose.yml` — eles sobem um Postgres próprio e efêmero via Testcontainers.
-
-### 🧪 Testes
+## 🧪 Testes
 
 Os testes de integração usam [Testcontainers](https://testcontainers.com/), que sobe um Postgres real em container automaticamente — não é preciso configurar banco manualmente. Basta ter o **Docker** em execução:
 
@@ -116,7 +125,15 @@ Os testes de integração usam [Testcontainers](https://testcontainers.com/), qu
 mvn test
 ```
 
-### 📖 Documentação da API (Swagger)
+## ✅ Checkstyle
+
+Você pode verificar o checkstyle e manter o padrão de formatação do seu código através do comando:
+
+```sh
+mvn checkstyle:check
+```
+
+## 📖 Documentação da API (Swagger)
 
 A documentação interativa (OpenAPI 3) é gerada automaticamente pelo springdoc. Com a aplicação no ar, acesse:
 
@@ -125,14 +142,6 @@ A documentação interativa (OpenAPI 3) é gerada automaticamente pelo springdoc
 
 O esquema de segurança JWT já está configurado — use o botão **Authorize** e informe o token (obtido em `/auth/login`) para chamar os endpoints protegidos. Para desabilitar em produção, defina `SPRINGDOC_API_DOCS_ENABLED=false` e `SPRINGDOC_SWAGGER_UI_ENABLED=false`.
 
-### ✅ Checkstyle
+## 🤝 Contribuições
 
-Você pode verificar o checkstyle e manter o padrão de formatação do seu código através do comando:
-
-```sh
-mvn checkstyle:check
-```
-
-### 🤝 Contribuições
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir um pull request para propor melhorias ou correções.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir um pull request para propor melhorias ou correções. Leia o [CONTRIBUTING](CONTRIBUTING.md) para orientações.
