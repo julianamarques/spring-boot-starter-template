@@ -115,14 +115,20 @@ docker compose up -d --build                    # PARA EXECUTAR COM DOCKER
 
 A API fica disponível em `http://localhost:8080/base-url` (ex.: `GET /base-url/health/check`).
 
-> No Docker, o `docker-compose.yml` sobe só a aplicação — é preciso ter um Postgres acessível em `host.docker.internal:5432` (ajustável via `DB_URL`, `USER_DB` e `PASSWORD_DB`). Para mudar a porta exposta, use `APP_HOST_PORT=8081 docker compose up -d --build`. Se o front-end rodar fora de `localhost:4200`/`localhost:3000`, defina `CORS_ALLOWED_ORIGINS`. Os testes não usam esse compose — eles sobem um Postgres próprio via Testcontainers.
+> No Docker, o `docker-compose.yml` sobe só a aplicação — é preciso ter um Postgres acessível em `host.docker.internal:5432` (ajustável via `DB_URL`, `USER_DB` e `PASSWORD_DB`). Para mudar a porta exposta, use `APP_HOST_PORT=8081 docker compose up -d --build`. Se o front-end rodar fora de `localhost:4200`/`localhost:3000`, defina `CORS_ALLOWED_ORIGINS`. Os testes não usam esse compose.
 
 ## 🧪 Testes
 
-Os testes de integração usam [Testcontainers](https://testcontainers.com/), que sobe um Postgres real em container automaticamente — não é preciso configurar banco manualmente. Basta ter o **Docker** em execução:
+Por padrão, os testes usam um banco H2 em memória configurado em modo de compatibilidade com PostgreSQL. Não é necessário ter Docker nem um banco instalado para executá-los localmente:
 
 ```sh
 mvn test
+```
+
+Para validar a mesma suíte contra um PostgreSQL real, habilite o Testcontainers. Nesse modo, é necessário ter o Docker em execução:
+
+```sh
+mvn test -Dtestcontainers.enabled=true
 ```
 
 ## ✅ Checkstyle

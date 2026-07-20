@@ -39,8 +39,12 @@ mvn test
 mvn checkstyle:check
 ```
 
-Os testes de integração usam Testcontainers e sobem um Postgres real em container
-automaticamente, portanto é necessário ter o **Docker** em execução para rodar `mvn test`.
+Por padrão, os testes usam H2 em memória e `mvn test` não exige Docker nem um banco
+local. Para validar a suíte contra um PostgreSQL real, tenha o Docker em execução e rode:
+
+```sh
+mvn test -Dtestcontainers.enabled=true
+```
 
 Também reveja se:
 
