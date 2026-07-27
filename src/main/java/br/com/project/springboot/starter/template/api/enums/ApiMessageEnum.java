@@ -3,6 +3,7 @@ package br.com.project.springboot.starter.template.api.enums;
 import lombok.Getter;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -30,7 +31,7 @@ public enum ApiMessageEnum {
         this.description = description;
     }
 
-    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("messages");
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("messages", Locale.of("pt", "BR"));
     private final String description;
 
     public String getMessage(String... args) {

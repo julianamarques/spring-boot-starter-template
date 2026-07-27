@@ -4,6 +4,7 @@ import br.com.project.springboot.starter.template.api.dtos.response.Response;
 import br.com.project.springboot.starter.template.api.enums.ApiMessageEnum;
 import br.com.project.springboot.starter.template.api.exceptions.ApiException;
 import br.com.project.springboot.starter.template.api.exceptions.ApiExternalException;
+import br.com.project.springboot.starter.template.api.utils.LogUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.Ordered;
@@ -61,10 +62,9 @@ public class ApiExceptionHandler {
     @NonNull
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<Object> handleHttpMessageNotReadable(@NonNull HttpMessageNotReadableException ex) {
-        log.error(ex);
+        log.warn("Malformed request body", ex);
 
-        String causeMessage = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-        return Response.error(HttpStatus.BAD_REQUEST, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), causeMessage);
+        return Response.error(HttpStatus.BAD_REQUEST, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), null);
     }
 
     @NonNull
@@ -113,7 +113,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Object> handleApiErrorException(ApiException exception) {
-        printErrorLog(exception, null, null);
+        printErrorLog(exception);
 
         return Response.error(exception.getHttpStatus(), exception
                 .getApiMessage().getMessage(), exception.getErrorMessage());
@@ -121,47 +121,33 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ApiExternalException.class)
     public ResponseEntity<Object> handleApiExternalException(ApiExternalException exception) {
-        printErrorLog(null, exception, exception.getMessage());
+        LogUtils.logExternalWarn(exception);
 
         return Response.error(exception.getHttpStatus(), exception.getMessage(), exception.getResponseBody());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
-        log.error("A data integrity violation occurred!", exception);
+        log.warn("A data integrity violation occurred!", exception);
 
         return Response.error(HttpStatus.CONFLICT, ApiMessageEnum.DATA_INTEGRITY_VIOLATION.getMessage(), null);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception exception) {
-        String causeMessage = exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
+        log.error("An unexpected error has occurred!", exception);
 
-        ApiException apiException = new ApiException(HttpStatus.INTERNAL_SERVER_ERROR,
-                ApiMessageEnum.UNKNOWN_ERROR, causeMessage);
-
-        printErrorLog(apiException, null, null);
-
-        return Response.error(HttpStatus.INTERNAL_SERVER_ERROR, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), causeMessage);
+        return Response.error(HttpStatus.INTERNAL_SERVER_ERROR, ApiMessageEnum.UNKNOWN_ERROR.getMessage(), null);
     }
 
-    private void printErrorLog(ApiException exception, ApiExternalException externalException,
-                               String externalClientMessage) {
-        String typeMessageApi = "";
-        String messageApi = "";
+    private void printErrorLog(ApiException exception) {
+        String typeMessageApi = exception.getApiMessage().name();
+        String messageApi = exception.getApiMessage().getMessage();
 
-        if (Objects.nonNull(exception)) {
-            log.error("An unknown error has occurred!");
-            typeMessageApi = exception.getApiMessage().name();
-            messageApi = exception.getApiMessage().getMessage();
-        } else if (Objects.nonNull(externalException)) {
-            typeMessageApi = externalException.getApiMessage();
-            messageApi = externalClientMessage;
-
-            log.error("An external client error, reason: [{}] in type call: [{}]",
-                    externalException.getReason(), externalException.getMethodKey());
+        if (exception.getHttpStatus().is5xxServerError()) {
+            log.error("[{}] :: {}", typeMessageApi, messageApi, exception);
+        } else {
+            log.warn("[{}] :: {}", typeMessageApi, messageApi);
         }
-
-        log.error("[{}] :: {}", typeMessageApi, messageApi);
     }
 }

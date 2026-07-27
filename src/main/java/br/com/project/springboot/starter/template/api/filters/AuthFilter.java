@@ -60,7 +60,7 @@ public class AuthFilter extends OncePerRequestFilter {
             List<GrantedAuthority> roles = user.getRoles().stream()
                     .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                     .collect(Collectors.toList());
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, user.getPassword(), roles);
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, roles);
 
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(auth);

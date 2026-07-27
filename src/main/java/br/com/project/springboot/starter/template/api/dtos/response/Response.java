@@ -25,10 +25,18 @@ public class Response<B> implements Serializable {
     }
 
     public static <T> ResponseEntity<Response<T>> success(T body) {
-        return ResponseEntity.ok(new Response<>(HttpStatus.OK, ApiMessageEnum.REQUEST_COMPLETED.getMessage(), body));
+        return success(HttpStatus.OK, body);
+    }
+
+    public static <T> ResponseEntity<Response<T>> created(T body) {
+        return success(HttpStatus.CREATED, body);
     }
 
     public static ResponseEntity<Object> error(HttpStatus status, String message, Object body) {
         return new ResponseEntity<>(new Response<>(status, message, body), status);
+    }
+
+    private static <T> ResponseEntity<Response<T>> success(HttpStatus status, T body) {
+        return ResponseEntity.status(status).body(new Response<>(status, ApiMessageEnum.REQUEST_COMPLETED.getMessage(), body));
     }
 }

@@ -25,14 +25,14 @@ public class User implements Serializable, UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
     @Getter(AccessLevel.NONE)
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "active")
+    @Column(name = "active", nullable = false)
     private Boolean active;
     @ManyToMany(
             fetch = FetchType.EAGER,

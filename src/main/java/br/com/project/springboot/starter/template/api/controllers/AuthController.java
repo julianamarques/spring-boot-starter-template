@@ -35,7 +35,7 @@ public class AuthController {
     public ResponseEntity<Response<UserResponseDTO>> createUser(@Valid @RequestBody UserRequestDTO request) throws ApiException {
         UserResponseDTO body = authService.save(request);
 
-        return Response.success(body);
+        return Response.created(body);
     }
 
     @PutMapping("/edit-user")

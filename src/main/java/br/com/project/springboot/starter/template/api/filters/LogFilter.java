@@ -48,6 +48,7 @@ public class LogFilter extends OncePerRequestFilter {
         }
 
         LogUtils.clearRequestPathContext(LogContextEnum.API_CONTEXT);
+        LogUtils.clearRequestUuid();
     }
 
     private long getRequestTime(HttpServletRequest request) {

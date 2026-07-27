@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 public enum LogContextEnum {
     API_CONTEXT("api");
 
-    private final String descricao;
+    private final String description;
 
-    public String getDescricao(String arg) {
-        return this.descricao + " :: " + arg;
+    public String getDescription(String arg) {
+        return this.description + " :: " + arg;
     }
 }

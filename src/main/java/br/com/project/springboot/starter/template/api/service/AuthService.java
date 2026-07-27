@@ -28,6 +28,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthService implements UserDetailsService {
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String DUMMY_PASSWORD_HASH = "$2a$10$GuJVDKznfY57Kyo6rP17PuONfe6nQe.gcz6qtxyRtVqbnrIAC3rnO";
 
     private final UserService userService;
     private final TokenService tokenService;
@@ -40,10 +41,15 @@ public class AuthService implements UserDetailsService {
 
         try {
             user = loadUserByUsername(request.getEmail());
+        } catch (UsernameNotFoundException e) {
+            passwordEncoder.matches(request.getPassword(), DUMMY_PASSWORD_HASH);
+            throw unauthorized();
+        }
+
+        try {
             validatePassword(request.getPassword(), user.getPassword());
-        } catch (UsernameNotFoundException | ApiException e) {
-            log.warn("Login failed: invalid credentials");
-            throw new ApiException(HttpStatus.UNAUTHORIZED, ApiMessageEnum.INVALID_USER_OR_PASSWORD);
+        } catch (ApiException e) {
+            throw unauthorized();
         }
 
         validateActiveUser(user);
@@ -111,10 +117,10 @@ public class AuthService implements UserDetailsService {
 
     public UserResponseDTO getAuthUserDTO(String token) throws ApiException {
         token = extractToken(token);
-        User usuario = getAuthUser();
+        User user = getAuthUser();
         Date expirationDate = tokenService.getExpirationDate(token);
 
-        return new UserResponseDTO(token, expirationDate, usuario);
+        return new UserResponseDTO(token, expirationDate, user);
     }
 
     @NonNull
@@ -123,7 +129,7 @@ public class AuthService implements UserDetailsService {
         try {
             return userService.findByEmail(username);
         } catch (UsernameNotFoundException | ApiException e) {
-            log.error(e);
+            log.debug("User not found for username: {}", username);
             throw new UsernameNotFoundException(ApiMessageEnum.USER_NOT_FOUND.getMessage());
         }
     }
@@ -138,6 +144,12 @@ public class AuthService implements UserDetailsService {
         if (!isValidPassword) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, ApiMessageEnum.INVALID_PASSWORD);
         }
+    }
+
+    private ApiException unauthorized() {
+        log.warn("Login failed: invalid credentials");
+
+        return new ApiException(HttpStatus.UNAUTHORIZED, ApiMessageEnum.INVALID_USER_OR_PASSWORD);
     }
 
     private void validateActiveUser(User user) throws ApiException {

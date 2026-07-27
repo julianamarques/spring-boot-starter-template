@@ -21,5 +21,7 @@ CREATE TABLE roleuser (
     CONSTRAINT fk_user FOREIGN KEY (userfk) REFERENCES "user"(id)
 );
 
+CREATE INDEX idx_roleuser_userfk ON roleuser(userfk);
+
 INSERT INTO role(id, name) VALUES('d8f6b9ca-471b-45ca-a6df-a64d20e883c1', 'USER');
 INSERT INTO role(id, name) VALUES('06813833-fad6-4240-8c12-992e60e26bed', 'ADMIN');

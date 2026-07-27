@@ -11,20 +11,25 @@
 	<groupId>br.com.project.springboot.starter.template</groupId>
 	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
+	<name>springboot-starter-template-api</name>
+	<description>Spring Boot Starter Template: Template Project</description>
+	<url>https://github.com/julianamarques/spring-boot-starter-template</url>
 	<licenses>
-		<license/>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+		</license>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<id>julianamarques</id>
+		</developer>
 	</developers>
 	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
+		<connection>scm:git:https://github.com/julianamarques/spring-boot-starter-template.git</connection>
+		<developerConnection>scm:git:https://github.com/julianamarques/spring-boot-starter-template.git</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/julianamarques/spring-boot-starter-template</url>
 	</scm>
 	<properties>
 		<java.version>25</java.version>
@@ -223,12 +228,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>3.6.0</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.16.0</version>
+						<version>13.9.0</version>
 					</dependency>
 				</dependencies>
 				<configuration>

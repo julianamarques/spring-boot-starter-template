@@ -37,9 +37,9 @@ class AuthControllerTest {
     void createUser_returnsEnvelopedAccessToken() {
         ResponseEntity<Map<String, Object>> response = post("/auth/create-user", newUser("create@example.com"));
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).containsKey("status").containsKey("message").containsKey("timestamp");
-        assertThat(response.getBody().get("status")).isEqualTo(200);
+        assertThat(response.getBody().get("status")).isEqualTo(201);
         assertThat(data(response).get("accessToken")).asString().isNotBlank();
         assertThat(data(response).get("email")).isEqualTo("create@example.com");
     }
@@ -136,7 +136,7 @@ class AuthControllerTest {
 
     private String createUser(String email) {
         ResponseEntity<Map<String, Object>> response = post("/auth/create-user", newUser(email));
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         return (String) data(response).get("accessToken");
     }
 

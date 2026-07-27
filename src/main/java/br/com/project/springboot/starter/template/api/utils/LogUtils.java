@@ -24,7 +24,7 @@ public class LogUtils {
 
     public static void logRequestPathContext(LogContextEnum context, String arg) {
         try {
-            MDC.put(LogUtils.REQUEST_PATH_CONTEXT, String.format("[%s]", context.getDescricao(arg)));
+            MDC.put(LogUtils.REQUEST_PATH_CONTEXT, String.format("[%s]", context.getDescription(arg)));
         } catch (Exception e) {
             log.warn("Erro ao adicionar no log o request path da requisição", e);
         }
@@ -37,6 +37,14 @@ public class LogUtils {
             }
         } catch (Exception e) {
             log.warn(" Erro ao limpar o requestPathContext", e);
+        }
+    }
+
+    public static void clearRequestUuid() {
+        try {
+            MDC.remove(LogUtils.REQUEST_UUID);
+        } catch (Exception e) {
+            log.warn("Erro ao limpar o requestUuid", e);
         }
     }
 
@@ -55,7 +63,7 @@ public class LogUtils {
     }
 
     private static String buildRequestPathContextRegex(LogContextEnum logContext) {
-        return "\\[" + logContext.getDescricao() + ".*\\]";
+        return "\\[" + logContext.getDescription() + ".*\\]";
     }
 
     public static void logExternalWarn(ApiExternalException exception) {
