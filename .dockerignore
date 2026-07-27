@@ -10,3 +10,5 @@ mvnw.cmd
 docker-compose.yml
 Dockerfile
 .dockerignore
+.env
+.env.example

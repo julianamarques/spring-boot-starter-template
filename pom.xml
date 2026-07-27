@@ -36,6 +36,7 @@
 		<spring-cloud.version>2025.1.2</spring-cloud.version>
 		<jsonwebtoken.version>0.13.0</jsonwebtoken.version>
 		<springdoc.version>3.0.3</springdoc.version>
+		<springdotenv.version>5.1.0</springdotenv.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -89,6 +90,11 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
 			<version>${jsonwebtoken.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>me.paulschwarz</groupId>
+			<artifactId>springboot4-dotenv</artifactId>
+			<version>${springdotenv.version}</version>
 		</dependency>
 
 		<dependency>

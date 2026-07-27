@@ -15,6 +15,7 @@ Projeto template com algumas configurações comuns já feitas e autenticação 
 
 ```
 ├── .github/workflows/     # CI: build, testes e checkstyle a cada push/PR
+├── .env.example           # Modelo das variáveis de ambiente (copie para .env)
 ├── src/main/java/.../api/
 │   ├── configs/           # Configurações (segurança, Hibernate, OpenAPI, Jackson)
 │   │   └── clients/       # Configuração do Feign client e decoder de erros
@@ -104,18 +105,25 @@ Projeto template com algumas configurações comuns já feitas e autenticação 
 
 ### 🚀 Executando o Projeto
 
-Defina o segredo do JWT (obrigatório, mínimo 64 bytes) e rode local ou com Docker:
+Copie o arquivo de exemplo e preencha o segredo do JWT (obrigatório, mínimo 64 bytes):
 
 ```sh
-export KEY_JWT_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+cp .env.example .env
+sed -i "s|^KEY_JWT_SECRET=.*|KEY_JWT_SECRET=$(openssl rand -base64 64 | tr -d '\n')|" .env
+```
 
+O `.env` na raiz do projeto é lido automaticamente tanto pela aplicação (via [spring-dotenv](https://github.com/paulschwarz/spring-dotenv)) quanto pelo `docker compose` — as mesmas variáveis valem para os dois:
+
+```sh
 mvn clean install spring-boot:run -DskipTests   # PARA EXECUTAR LOCALMENTE
 docker compose up -d --build                    # PARA EXECUTAR COM DOCKER
 ```
 
 A API fica disponível em `http://localhost:8080/base-url` (ex.: `GET /base-url/health/check`).
 
-> No Docker, o `docker-compose.yml` sobe só a aplicação — é preciso ter um Postgres acessível em `host.docker.internal:5432` (ajustável via `DB_URL`, `USER_DB` e `PASSWORD_DB`). Para mudar a porta exposta, use `APP_HOST_PORT=8081 docker compose up -d --build`. Se o front-end rodar fora de `localhost:4200`/`localhost:3000`, defina `CORS_ALLOWED_ORIGINS`. Os testes não usam esse compose.
+> Variáveis já definidas no ambiente real (shell, CI, orquestrador) sempre têm prioridade sobre o `.env` — ele serve só de conveniência local e nunca deve ser commitado. Se preferir não usar `.env`, basta exportar as variáveis manualmente (ex.: `export KEY_JWT_SECRET=...`).
+>
+> No Docker, o `docker-compose.yml` sobe só a aplicação — é preciso ter um Postgres acessível em `host.docker.internal:5432` (ajustável via `DB_URL`, `USER_DB` e `PASSWORD_DB` no `.env`). Para mudar a porta exposta, defina `APP_HOST_PORT` no `.env` (ou `APP_HOST_PORT=8081 docker compose up -d --build`). Se o front-end rodar fora de `localhost:4200`/`localhost:3000`, defina `CORS_ALLOWED_ORIGINS`. Os testes não usam esse compose nem o `.env`.
 
 ## 🧪 Testes
 

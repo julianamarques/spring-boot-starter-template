@@ -3,11 +3,11 @@ services:
     build: .
     container_name: spring-boot-starter-template-app
     environment:
-      DB_URL: jdbc:postgresql://host.docker.internal:5432/database_local
-      USER_DB: postgres
-      PASSWORD_DB: postgres
-      KEY_JWT_SECRET: dev-only-change-me-0123456789-0123456789-0123456789-0123456789-0123456789
-      SPRING_FLYWAY_ENABLED: "true"
+      DB_URL: ${DB_URL:-jdbc:postgresql://host.docker.internal:5432/database_local}
+      USER_DB: ${USER_DB:-postgres}
+      PASSWORD_DB: ${PASSWORD_DB:-postgres}
+      KEY_JWT_SECRET: ${KEY_JWT_SECRET:-dev-only-change-me-0123456789-0123456789-0123456789-0123456789-0123456789}
+      SPRING_FLYWAY_ENABLED: ${SPRING_FLYWAY_ENABLED:-true}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
