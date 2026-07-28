@@ -7,6 +7,9 @@ services:
       USER_DB: ${USER_DB:-postgres}
       PASSWORD_DB: ${PASSWORD_DB:-postgres}
       KEY_JWT_SECRET: ${KEY_JWT_SECRET:-dev-only-change-me-0123456789-0123456789-0123456789-0123456789-0123456789}
+      KEY_JWT_EXPIRATION: ${KEY_JWT_EXPIRATION:-3600}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,http://localhost:3000}
+      CONTEXT_PATH: ${CONTEXT_PATH:-/base-url}
       SPRING_FLYWAY_ENABLED: ${SPRING_FLYWAY_ENABLED:-true}
     extra_hosts:
       - "host.docker.internal:host-gateway"

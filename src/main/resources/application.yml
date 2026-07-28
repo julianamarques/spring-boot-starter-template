@@ -7,10 +7,11 @@ spring:
     password: ${PASSWORD_DB:postgres}
     driver-class-name: org.postgresql.Driver
   jpa:
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
         hbm2ddl:
           schema_filter_provider: br.com.project.springboot.starter.template.api.configs.HibernateConfig
     hibernate:
@@ -48,7 +49,7 @@ logging:
   level:
     org:
       hibernate:
-        type: trace
+        type: warn
     br.com.project.springboot.starter.template.api: DEBUG
     root: INFO
 
